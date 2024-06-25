@@ -31,6 +31,7 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
 
         static InterfaceInterceptorClassGenerator()
         {
+#if !NET6_0_OR_GREATER
             byte[] pair;
 
             using (MemoryStream ms = new MemoryStream())
@@ -42,13 +43,17 @@ namespace Unity.Interception.Interceptors.InstanceInterceptors.InterfaceIntercep
 
                 pair = ms.ToArray();
             }
+#endif
 
             AssemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(
-                new AssemblyName("Unity_ILEmit_InterfaceProxies") { KeyPair = new StrongNameKeyPair(pair) },
+                new AssemblyName("Unity_ILEmit_InterfaceProxies")
+#if !NET6_0_OR_GREATER
+                    { KeyPair = new StrongNameKeyPair(pair) }
+#endif
 #if DEBUG_SAVE_GENERATED_ASSEMBLY
-                AssemblyBuilderAccess.RunAndSave);
+                , AssemblyBuilderAccess.RunAndSave);
 #else
-                AssemblyBuilderAccess.Run);
+                , AssemblyBuilderAccess.Run);
 #endif
         }
 
